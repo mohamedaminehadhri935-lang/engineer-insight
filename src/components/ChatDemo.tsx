@@ -1,8 +1,9 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Send, FileText } from "lucide-react";
+import { Send, FileText, Play } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const sampleMessages = [
   {
@@ -18,6 +19,7 @@ const sampleMessages = [
 
 export const ChatDemo = () => {
   const [input, setInput] = useState("");
+  const navigate = useNavigate();
 
   return (
     <section className="py-24 px-4">
@@ -29,6 +31,14 @@ export const ChatDemo = () => {
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             See how OnboardIQ answers company-specific questions using your actual documentation
           </p>
+          <Button
+            size="lg"
+            onClick={() => navigate("/demo")}
+            className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-primary-foreground font-semibold shadow-[var(--shadow-glow)]"
+          >
+            <Play className="w-5 h-5 mr-2" />
+            Watch Interactive Demo
+          </Button>
         </div>
 
         <Card className="max-w-3xl mx-auto bg-card border-border/50 shadow-[var(--shadow-medium)]">
