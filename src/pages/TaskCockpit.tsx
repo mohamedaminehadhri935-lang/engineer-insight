@@ -1,30 +1,130 @@
-import { useState, useEffect } from "react";
-import { ChevronDown, ArrowLeft, Volume2 } from "lucide-react";
+import { useState } from "react";
+import { ChevronDown, ArrowLeft, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
 // Types
 interface Subtask {
   id: string;
-  title: string;
+  label: string;
   completed: boolean;
 }
 
 interface Task {
   id: string;
   title: string;
+  description: string;
   subtasks: Subtask[];
 }
 
 interface Category {
   id: string;
-  title: string;
-  icon: string;
+  name: string;
   tasks: Task[];
 }
 
-// Audio feedback
-const playSound = (frequency: number, duration: number) => {
+// Initial Data
+const INITIAL_DATA: Category[] = [
+  {
+    id: "cat-1",
+    name: "Planning & Focus",
+    tasks: [
+      {
+        id: "task-1",
+        title: "Define key responsibilities",
+        description: "Capture what really matters for this role.",
+        subtasks: [
+          { id: "st-1", label: "List top 3–5 responsibilities", completed: false },
+          { id: "st-2", label: "Clarify ownership and scope", completed: false },
+          { id: "st-3", label: "Confirm with stakeholders", completed: false }
+        ]
+      },
+      {
+        id: "task-2",
+        title: "Write role summary",
+        description: "Summarize impact in 2–3 sentences.",
+        subtasks: [
+          { id: "st-1", label: "Outline mission of the role", completed: false },
+          { id: "st-2", label: "Describe main outcomes", completed: false }
+        ]
+      }
+    ]
+  },
+  {
+    id: "cat-2",
+    name: "Execution & Review",
+    tasks: [
+      {
+        id: "task-3",
+        title: "Break work into task categories",
+        description: "Group recurring workflows into categories.",
+        subtasks: [
+          { id: "st-1", label: "Collect all recurring tasks", completed: false },
+          { id: "st-2", label: "Cluster by theme", completed: false },
+          { id: "st-3", label: "Name the categories", completed: false }
+        ]
+      }
+    ]
+  }
+];
+
+// Robotic chime with square wave
+const playRoboticChime = () => {
+  try {
+    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const notes = [440, 660, 990];
+    let startTime = audioContext.currentTime;
+
+    notes.forEach((frequency) => {
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+
+      oscillator.type = 'square';
+      oscillator.frequency.value = frequency;
+
+      gainNode.gain.setValueAtTime(0.15, startTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 0.2);
+
+      oscillator.start(startTime);
+      oscillator.stop(startTime + 0.25);
+
+      startTime += 0.25;
+    });
+  } catch (e) {
+    console.log('Audio not available');
+  }
+};
+
+// Robotic voice
+const speakRobotic = (text: string) => {
+  try {
+    if ('speechSynthesis' in window) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.pitch = 0.6;
+      utterance.rate = 1.15;
+      utterance.volume = 0.6;
+
+      // Try to find a robotic voice
+      const voices = window.speechSynthesis.getVoices();
+      const robotVoice = voices.find(v => 
+        v.name.toLowerCase().includes('robot') || 
+        v.name.toLowerCase().includes('zarvox') ||
+        v.name.toLowerCase().includes('siri')
+      );
+      if (robotVoice) utterance.voice = robotVoice;
+
+      window.speechSynthesis.speak(utterance);
+    }
+  } catch (e) {
+    console.log('Speech synthesis not available');
+  }
+};
+
+// Simple click sound
+const playClick = (frequency: number) => {
   try {
     const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
     const oscillator = audioContext.createOscillator();
@@ -37,196 +137,114 @@ const playSound = (frequency: number, duration: number) => {
     oscillator.type = 'sine';
     
     gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
     
     oscillator.start(audioContext.currentTime);
-    oscillator.stop(audioContext.currentTime + duration);
+    oscillator.stop(audioContext.currentTime + 0.1);
   } catch (e) {
     console.log('Audio not available');
   }
 };
 
-const speak = (text: string) => {
-  try {
-    if ('speechSynthesis' in window) {
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.rate = 1.2;
-      utterance.pitch = 1;
-      utterance.volume = 0.5;
-      window.speechSynthesis.speak(utterance);
-    }
-  } catch (e) {
-    console.log('Speech synthesis not available');
-  }
-};
-
-// Initial data
-const initialCategories: Category[] = [
-  {
-    id: "cat1",
-    title: "Feature Development",
-    icon: "⚡",
-    tasks: [
-      {
-        id: "task1",
-        title: "User Authentication System",
-        subtasks: [
-          { id: "st1", title: "Design login UI", completed: true },
-          { id: "st2", title: "Implement OAuth flow", completed: true },
-          { id: "st3", title: "Add password reset", completed: false },
-          { id: "st4", title: "Write unit tests", completed: false },
-        ],
-      },
-      {
-        id: "task2",
-        title: "Dashboard Analytics",
-        subtasks: [
-          { id: "st5", title: "Create chart components", completed: true },
-          { id: "st6", title: "Integrate data API", completed: false },
-          { id: "st7", title: "Add export feature", completed: false },
-        ],
-      },
-    ],
-  },
-  {
-    id: "cat2",
-    title: "Code Quality",
-    icon: "🎯",
-    tasks: [
-      {
-        id: "task3",
-        title: "Testing & Coverage",
-        subtasks: [
-          { id: "st8", title: "Set up Jest config", completed: true },
-          { id: "st9", title: "Write integration tests", completed: false },
-          { id: "st10", title: "Achieve 80% coverage", completed: false },
-        ],
-      },
-      {
-        id: "task4",
-        title: "Code Reviews",
-        subtasks: [
-          { id: "st11", title: "Review PR #234", completed: true },
-          { id: "st12", title: "Review PR #235", completed: false },
-        ],
-      },
-    ],
-  },
-  {
-    id: "cat3",
-    title: "Documentation",
-    icon: "📚",
-    tasks: [
-      {
-        id: "task5",
-        title: "API Documentation",
-        subtasks: [
-          { id: "st13", title: "Document endpoints", completed: true },
-          { id: "st14", title: "Add usage examples", completed: false },
-          { id: "st15", title: "Create Postman collection", completed: false },
-        ],
-      },
-    ],
-  },
-];
-
-export default function TaskCockpit() {
+export default function iOSTaskFlow() {
   const navigate = useNavigate();
-  const [categories, setCategories] = useState<Category[]>(initialCategories);
+  const [categories, setCategories] = useState<Category[]>(INITIAL_DATA);
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
     responsibilities: false,
     summary: false,
     tasks: true,
   });
   const [openCategories, setOpenCategories] = useState<Record<string, boolean>>({});
-  const [openTasks, setOpenTasks] = useState<Record<string, boolean>>({});
+  const [completionToast, setCompletionToast] = useState<{ show: boolean; taskTitle: string }>({
+    show: false,
+    taskTitle: "",
+  });
 
-  // Calculate overall progress
+  // Calculate overall progress (TASK-BASED)
   const calculateProgress = () => {
-    let totalSubtasks = 0;
-    let completedSubtasks = 0;
+    let totalTasks = 0;
+    let completedTasks = 0;
 
     categories.forEach(cat => {
       cat.tasks.forEach(task => {
-        task.subtasks.forEach(subtask => {
-          totalSubtasks++;
-          if (subtask.completed) completedSubtasks++;
-        });
+        totalTasks++;
+        const allSubtasksComplete = task.subtasks.every(st => st.completed);
+        if (allSubtasksComplete) completedTasks++;
       });
     });
 
-    return totalSubtasks > 0 ? Math.round((completedSubtasks / totalSubtasks) * 100) : 0;
+    return totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
   };
 
   const overallPercent = calculateProgress();
 
-  // Risk level
-  const getRiskLevel = () => {
-    if (overallPercent >= 80) return { level: "Low", color: "text-green-400" };
-    if (overallPercent >= 50) return { level: "Medium", color: "text-amber-400" };
-    return { level: "High", color: "text-red-400" };
+  // REVERSED Progress Level Logic
+  const getProgressLevel = () => {
+    if (overallPercent === 0) return { level: "Low", color: "text-red-400" };
+    if (overallPercent === 100) return { level: "High", color: "text-green-400" };
+    return { level: "Medium", color: "text-amber-400" };
   };
 
-  const risk = getRiskLevel();
-
-  // KPIs
-  const kpis = {
-    featuresCompletion: overallPercent,
-    developmentCompletion: Math.max(0, Math.min(100, overallPercent - 5)),
-    testingCompletion: Math.max(0, Math.min(100, overallPercent + 10)),
-    criticalDefects: Math.round((100 - overallPercent) / 20),
-    highImportanceDefects: Math.round((100 - overallPercent) / 2),
-  };
+  const progressLevel = getProgressLevel();
 
   // Toggle handlers
   const toggleSection = (section: string) => {
     setOpenSections(prev => ({ ...prev, [section]: !prev[section] }));
-    playSound(800, 0.1);
+    playClick(800);
   };
 
   const toggleCategory = (categoryId: string) => {
     setOpenCategories(prev => ({ ...prev, [categoryId]: !prev[categoryId] }));
-    playSound(600, 0.1);
-  };
-
-  const toggleTask = (taskId: string) => {
-    setOpenTasks(prev => ({ ...prev, [taskId]: !prev[taskId] }));
-    playSound(500, 0.1);
+    playClick(600);
   };
 
   const toggleSubtask = (categoryId: string, taskId: string, subtaskId: string) => {
-    setCategories(prev => prev.map(cat => {
-      if (cat.id !== categoryId) return cat;
-      return {
-        ...cat,
-        tasks: cat.tasks.map(task => {
-          if (task.id !== taskId) return task;
-          return {
-            ...task,
-            subtasks: task.subtasks.map(st => {
-              if (st.id !== subtaskId) return st;
-              const newCompleted = !st.completed;
-              
-              // Audio & voice feedback
-              if (newCompleted) {
-                playSound(1000, 0.15);
-                speak("Task completed");
-              } else {
-                playSound(400, 0.15);
-              }
-              
-              return { ...st, completed: newCompleted };
-            }),
-          };
-        }),
-      };
-    }));
+    setCategories(prev => {
+      const newCategories = prev.map(cat => {
+        if (cat.id !== categoryId) return cat;
+        return {
+          ...cat,
+          tasks: cat.tasks.map(task => {
+            if (task.id !== taskId) return task;
+            
+            const wasComplete = task.subtasks.every(st => st.completed);
+            
+            const newTask = {
+              ...task,
+              subtasks: task.subtasks.map(st => {
+                if (st.id !== subtaskId) return st;
+                return { ...st, completed: !st.completed };
+              }),
+            };
+
+            const nowComplete = newTask.subtasks.every(st => st.completed);
+
+            // If task just became complete
+            if (!wasComplete && nowComplete) {
+              playRoboticChime();
+              setTimeout(() => {
+                speakRobotic(`Nice work. ${task.title} is now complete.`);
+              }, 100);
+              setCompletionToast({ show: true, taskTitle: task.title });
+              setTimeout(() => {
+                setCompletionToast({ show: false, taskTitle: "" });
+              }, 3200);
+            } else {
+              playClick(500);
+            }
+
+            return newTask;
+          }),
+        };
+      });
+      return newCategories;
+    });
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[hsl(215,40%,8%)] via-[hsl(215,35%,12%)] to-[hsl(215,40%,8%)] py-8 px-4">
       {/* Back button */}
-      <div className="max-w-[430px] mx-auto mb-4">
+      <div className="max-w-md mx-auto mb-4">
         <Button
           variant="ghost"
           size="sm"
@@ -239,7 +257,7 @@ export default function TaskCockpit() {
       </div>
 
       {/* Main container */}
-      <div className="max-w-[430px] mx-auto bg-[hsl(215,25%,12%)]/80 backdrop-blur-xl rounded-[2.25rem] border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.4)] p-6">
+      <div className="max-w-md mx-auto bg-[hsl(215,25%,12%)]/80 backdrop-blur-xl rounded-[2.25rem] border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.4)] p-6">
         {/* Header */}
         <div className="flex items-start justify-between mb-6">
           <div>
@@ -250,12 +268,12 @@ export default function TaskCockpit() {
               Responsibilities & Tasks
             </h1>
           </div>
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-2xl animate-pulse shadow-[var(--shadow-glow)]">
+          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-xl shadow-lg">
             ⚙️
           </div>
         </div>
 
-        {/* Overall Progress Ribbon */}
+        {/* Overall Progress Panel */}
         <div className="mb-6 p-5 rounded-3xl bg-card/40 backdrop-blur-sm border border-border/30">
           {/* Top row */}
           <div className="flex items-start justify-between mb-4">
@@ -264,7 +282,7 @@ export default function TaskCockpit() {
                 Overall Progress
               </div>
               <div className="text-xs text-muted-foreground/80">
-                Live roll-up of all subtasks in this workspace
+                Live roll-up of all tasks in this workspace
               </div>
             </div>
             <div className="text-right">
@@ -277,80 +295,55 @@ export default function TaskCockpit() {
             </div>
           </div>
 
-          {/* Bottom row */}
-          <div className="grid grid-cols-2 gap-4">
-            {/* Risk gauge card */}
-            <div className="col-span-2 sm:col-span-1 p-4 rounded-2xl bg-background/30 backdrop-blur-sm">
-              <div className="flex items-center gap-3">
-                {/* Circular gauge */}
-                <div className="relative w-16 h-16 shrink-0">
-                  <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
-                    {/* Background ring */}
-                    <circle
-                      cx="18"
-                      cy="18"
-                      r="16"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      className="text-muted/30"
-                    />
-                    {/* Progress ring */}
-                    <circle
-                      cx="18"
-                      cy="18"
-                      r="16"
-                      fill="none"
-                      stroke="url(#gaugeGradient)"
-                      strokeWidth="2"
-                      strokeDasharray={`${overallPercent} 100`}
-                      strokeLinecap="round"
-                      className="transition-all duration-500"
-                    />
-                    <defs>
-                      <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stopColor="hsl(0, 70%, 50%)" />
-                        <stop offset="50%" stopColor="hsl(45, 90%, 55%)" />
-                        <stop offset="100%" stopColor="hsl(120, 60%, 50%)" />
-                      </linearGradient>
-                    </defs>
-                  </svg>
-                  <div className="absolute inset-0 flex items-center justify-center text-xs font-bold text-foreground">
-                    {risk.level}
-                  </div>
-                </div>
-
-                {/* Risk level text */}
-                <div className="flex-1">
-                  <div className="text-xs text-muted-foreground mb-1">Risk level</div>
-                  <div className={`text-lg font-bold ${risk.color}`}>{risk.level}</div>
-                  <div className="mt-2 h-1 bg-muted/20 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-gradient-to-r from-green-400 via-amber-400 to-red-400 transition-all duration-500"
-                      style={{ width: `${overallPercent}%` }}
-                    />
-                  </div>
+          {/* Progress Level Card */}
+          <div className="p-4 rounded-2xl bg-background/30 backdrop-blur-sm">
+            <div className="flex items-center gap-4">
+              {/* Circular gradient badge */}
+              <div className="relative w-16 h-16 shrink-0">
+                <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
+                  <circle
+                    cx="18"
+                    cy="18"
+                    r="16"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    className="text-muted/30"
+                  />
+                  <circle
+                    cx="18"
+                    cy="18"
+                    r="16"
+                    fill="none"
+                    stroke="url(#progressGradient)"
+                    strokeWidth="2"
+                    strokeDasharray={`${overallPercent} 100`}
+                    strokeLinecap="round"
+                    className="transition-all duration-500"
+                  />
+                  <defs>
+                    <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stopColor="hsl(0, 70%, 50%)" />
+                      <stop offset="50%" stopColor="hsl(45, 90%, 55%)" />
+                      <stop offset="100%" stopColor="hsl(120, 60%, 50%)" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+                <div className="absolute inset-0 flex items-center justify-center text-xs font-bold text-foreground">
+                  {progressLevel.level}
                 </div>
               </div>
-            </div>
 
-            {/* KPI tiles */}
-            <div className="col-span-2 sm:col-span-1 grid grid-cols-2 gap-2">
-              <div className="p-3 rounded-xl bg-background/30 backdrop-blur-sm">
-                <div className="text-xl font-bold text-primary">{kpis.featuresCompletion}%</div>
-                <div className="text-[10px] text-muted-foreground">Features Completion</div>
-              </div>
-              <div className="p-3 rounded-xl bg-background/30 backdrop-blur-sm">
-                <div className="text-xl font-bold text-secondary">{kpis.developmentCompletion}%</div>
-                <div className="text-[10px] text-muted-foreground">Dev Completion</div>
-              </div>
-              <div className="p-3 rounded-xl bg-background/30 backdrop-blur-sm">
-                <div className="text-xl font-bold text-accent">{kpis.testingCompletion}%</div>
-                <div className="text-[10px] text-muted-foreground">Testing</div>
-              </div>
-              <div className="p-3 rounded-xl bg-background/30 backdrop-blur-sm">
-                <div className="text-xl font-bold text-red-400">{kpis.criticalDefects}</div>
-                <div className="text-[10px] text-muted-foreground">Critical Defects</div>
+              {/* Progress level text */}
+              <div className="flex-1">
+                <div className="text-xs text-muted-foreground mb-1">Progress level</div>
+                <div className={`text-lg font-bold ${progressLevel.color}`}>{progressLevel.level}</div>
+                <div className="mt-2 h-1 bg-muted/20 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-gradient-to-r from-red-400 via-amber-400 to-green-400 transition-all duration-500"
+                    style={{ width: `${overallPercent}%` }}
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -402,78 +395,101 @@ export default function TaskCockpit() {
             isOpen={openSections.tasks}
             onToggle={() => toggleSection("tasks")}
           >
-            <div className="space-y-3">
-              {categories.map(category => {
-                const categoryTotal = category.tasks.reduce((sum, t) => sum + t.subtasks.length, 0);
-                const categoryCompleted = category.tasks.reduce(
-                  (sum, t) => sum + t.subtasks.filter(st => st.completed).length,
-                  0
-                );
-                const categoryPercent = categoryTotal > 0 ? Math.round((categoryCompleted / categoryTotal) * 100) : 0;
-
-                return (
-                  <div key={category.id} className="rounded-2xl bg-background/20 border border-border/20 overflow-hidden">
-                    {/* Category header */}
-                    <button
-                      onClick={() => toggleCategory(category.id)}
-                      className="w-full p-4 flex items-center justify-between hover:bg-background/10 transition-colors"
-                    >
-                      <div className="flex items-center gap-3">
-                        <span className="text-2xl">{category.icon}</span>
-                        <div className="text-left">
-                          <div className="font-semibold text-foreground">{category.title}</div>
-                          <div className="text-xs text-muted-foreground">
-                            {categoryCompleted}/{categoryTotal} tasks • {categoryPercent}%
-                          </div>
-                        </div>
+            <div className="space-y-4">
+              {categories.map(category => (
+                <div key={category.id} className="rounded-2xl bg-background/20 border border-border/20 overflow-hidden">
+                  {/* Category header */}
+                  <button
+                    onClick={() => toggleCategory(category.id)}
+                    className="w-full p-4 flex items-center justify-between hover:bg-background/10 transition-colors"
+                  >
+                    <div className="text-left">
+                      <div className="font-semibold text-foreground">{category.name}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {category.tasks.length} {category.tasks.length === 1 ? 'task' : 'tasks'}
                       </div>
-                      <ChevronDown
-                        className={`w-5 h-5 text-muted-foreground transition-transform duration-300 ${
-                          openCategories[category.id] ? "rotate-180" : ""
-                        }`}
-                      />
-                    </button>
+                    </div>
+                    <ChevronDown
+                      className={`w-5 h-5 text-muted-foreground transition-transform duration-300 ${
+                        openCategories[category.id] ? "rotate-180" : ""
+                      }`}
+                    />
+                  </button>
 
-                    {/* Category tasks */}
-                    {openCategories[category.id] && (
-                      <div className="px-4 pb-4 space-y-2">
-                        {category.tasks.map(task => {
-                          const taskCompleted = task.subtasks.filter(st => st.completed).length;
-                          const taskTotal = task.subtasks.length;
+                  {/* Category tasks */}
+                  {openCategories[category.id] && (
+                    <div className="px-4 pb-4 space-y-3">
+                      {category.tasks.map(task => {
+                        const completedSubtasks = task.subtasks.filter(st => st.completed).length;
+                        const totalSubtasks = task.subtasks.length;
+                        const taskPercent = totalSubtasks > 0 ? Math.round((completedSubtasks / totalSubtasks) * 100) : 0;
+                        const isTaskComplete = taskPercent === 100;
 
-                          return (
-                            <div key={task.id} className="rounded-xl bg-background/30 overflow-hidden">
-                              {/* Task header */}
-                              <button
-                                onClick={() => toggleTask(task.id)}
-                                className="w-full p-3 flex items-center justify-between hover:bg-background/20 transition-colors"
-                              >
-                                <div className="text-left">
-                                  <div className="text-sm font-medium text-foreground">{task.title}</div>
-                                  <div className="text-xs text-muted-foreground">
-                                    {taskCompleted}/{taskTotal} complete
-                                  </div>
+                        return (
+                          <div 
+                            key={task.id} 
+                            className={`rounded-2xl bg-background/30 p-4 transition-all duration-300 ${
+                              isTaskComplete ? 'border-2 border-green-400/50' : ''
+                            }`}
+                          >
+                            <div className="flex gap-4">
+                              {/* Circular progress indicator */}
+                              <div className="relative w-16 h-16 shrink-0">
+                                <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
+                                  <circle
+                                    cx="18"
+                                    cy="18"
+                                    r="16"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    className="text-muted/30"
+                                  />
+                                  <circle
+                                    cx="18"
+                                    cy="18"
+                                    r="16"
+                                    fill="none"
+                                    stroke="hsl(var(--primary))"
+                                    strokeWidth="2"
+                                    strokeDasharray={`${taskPercent} 100`}
+                                    strokeLinecap="round"
+                                    className="transition-all duration-500"
+                                  />
+                                </svg>
+                                <div className="absolute inset-0 flex items-center justify-center text-xs font-bold text-foreground">
+                                  {taskPercent}%
                                 </div>
-                                <ChevronDown
-                                  className={`w-4 h-4 text-muted-foreground transition-transform duration-300 ${
-                                    openTasks[task.id] ? "rotate-180" : ""
-                                  }`}
-                                />
-                              </button>
+                              </div>
 
-                              {/* Subtasks */}
-                              {openTasks[task.id] && (
-                                <div className="px-3 pb-3 space-y-1">
-                                  {task.subtasks.map(subtask => (
+                              {/* Task content */}
+                              <div className="flex-1">
+                                <div className="flex items-start justify-between mb-1">
+                                  <h4 className="font-semibold text-foreground">{task.title}</h4>
+                                  {isTaskComplete && (
+                                    <span className="px-2 py-0.5 rounded-full bg-green-400/20 text-green-400 text-xs font-medium">
+                                      Done
+                                    </span>
+                                  )}
+                                </div>
+                                <p className="text-xs text-muted-foreground mb-3">{task.description}</p>
+
+                                {/* Subtasks with escalier effect */}
+                                <div className="space-y-1">
+                                  {task.subtasks.map((subtask, index) => (
                                     <label
                                       key={subtask.id}
-                                      className="flex items-center gap-3 p-2 rounded-lg hover:bg-background/20 cursor-pointer group transition-colors"
+                                      className={`flex items-center gap-3 p-2 rounded-lg hover:bg-background/20 cursor-pointer group transition-all duration-300 ${
+                                        subtask.completed 
+                                          ? 'translate-x-[-12px] bg-green-400/5 border-l-2 border-green-400' 
+                                          : ''
+                                      } ${index > 0 ? 'ml-3' : ''}`}
                                     >
                                       <input
                                         type="checkbox"
                                         checked={subtask.completed}
                                         onChange={() => toggleSubtask(category.id, task.id, subtask.id)}
-                                        className="w-5 h-5 rounded-md border-2 border-primary/50 checked:bg-primary checked:border-primary transition-all accent-primary"
+                                        className="w-4 h-4 rounded border-2 border-primary/50 checked:bg-primary checked:border-primary transition-all accent-primary"
                                       />
                                       <span
                                         className={`text-sm transition-all ${
@@ -482,34 +498,41 @@ export default function TaskCockpit() {
                                             : "text-foreground group-hover:text-primary"
                                         }`}
                                       >
-                                        {subtask.title}
+                                        {subtask.label}
                                       </span>
                                     </label>
                                   ))}
                                 </div>
-                              )}
+                              </div>
                             </div>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
           </Section>
         </div>
-
-        {/* Sound toggle */}
-        <div className="mt-6 flex items-center justify-center">
-          <button
-            onClick={() => speak("Audio feedback enabled")}
-            className="p-2 rounded-lg bg-background/20 hover:bg-background/30 transition-colors"
-          >
-            <Volume2 className="w-4 h-4 text-muted-foreground" />
-          </button>
-        </div>
       </div>
+
+      {/* Completion Toast */}
+      {completionToast.show && (
+        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 animate-fade-in">
+          <div className="bg-card/90 backdrop-blur-xl rounded-2xl border border-border/50 shadow-2xl p-4 flex items-center gap-4 max-w-md">
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center shrink-0">
+              <CheckCircle2 className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <div className="font-semibold text-foreground">Task complete</div>
+              <div className="text-sm text-muted-foreground">
+                "{completionToast.taskTitle}" is 100% done. Nice escalation!
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -545,7 +568,7 @@ function Section({ title, description, isOpen, onToggle, children }: SectionProp
       
       <div
         className={`transition-all duration-300 ease-in-out ${
-          isOpen ? "max-h-[1000px] opacity-100" : "max-h-0 opacity-0"
+          isOpen ? "max-h-[2000px] opacity-100" : "max-h-0 opacity-0"
         }`}
       >
         <div className="p-5 pt-0">{children}</div>
