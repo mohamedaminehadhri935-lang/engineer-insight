@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ChevronDown, ArrowLeft, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import onboardmeLogoSymbol from "@/assets/onboardme-logo-symbol.png";
 
 // Types
 interface Subtask {
@@ -242,9 +243,23 @@ export default function iOSTaskFlow() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[hsl(215,40%,8%)] via-[hsl(215,35%,12%)] to-[hsl(215,40%,8%)] py-8 px-4">
+    <div className="min-h-screen bg-[image:var(--gradient-dashboard)] py-8 px-4 relative overflow-hidden">
+      {/* Vignette overlay - calmer for dashboard */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,hsl(265_30%_3%/0.3)_70%,hsl(265_30%_2%/0.6)_100%)] pointer-events-none" />
+      
+      {/* Logo watermark - positioned top-left, lower opacity for dashboard */}
+      <div 
+        className="absolute -top-40 -left-40 w-[500px] h-[500px] opacity-[0.05] blur-[3px] pointer-events-none"
+        style={{
+          backgroundImage: `url(${onboardmeLogoSymbol})`,
+          backgroundSize: 'contain',
+          backgroundRepeat: 'no-repeat',
+          backgroundPosition: 'center',
+        }}
+      />
+      
       {/* Back button */}
-      <div className="max-w-md mx-auto mb-4">
+      <div className="max-w-md mx-auto mb-4 relative z-10">
         <Button
           variant="ghost"
           size="sm"

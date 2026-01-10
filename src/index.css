@@ -38,9 +38,10 @@ All colors MUST be HSL.
 
     --radius: 0.75rem;
     
-    /* Custom tokens for OnboardMe */
-    --gradient-hero: linear-gradient(135deg, hsl(240 25% 6%) 0%, hsl(250 25% 12%) 50%, hsl(260 30% 16%) 100%);
-    --gradient-card: linear-gradient(180deg, hsl(240 20% 11%) 0%, hsl(250 20% 14%) 100%);
+    /* Custom tokens for OnboardMe - Pitch Deck Style */
+    --gradient-hero: linear-gradient(145deg, hsl(265 35% 6%) 0%, hsl(268 30% 10%) 40%, hsl(270 25% 14%) 100%);
+    --gradient-dashboard: linear-gradient(145deg, hsl(265 30% 5%) 0%, hsl(268 25% 8%) 50%, hsl(270 20% 10%) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(265 25% 11%) 0%, hsl(268 22% 14%) 100%);
     --shadow-soft: 0 4px 24px -4px hsl(262 83% 58% / 0.15);
     --shadow-medium: 0 8px 32px -8px hsl(262 83% 58% / 0.2);
     --shadow-glow: 0 0 48px hsl(262 83% 58% / 0.35);
@@ -92,9 +93,10 @@ All colors MUST be HSL.
     --input: 240 15% 18%;
     --ring: 262 83% 58%;
     
-    /* Custom tokens for dark mode */
-    --gradient-hero: linear-gradient(135deg, hsl(240 25% 6%) 0%, hsl(250 25% 12%) 50%, hsl(260 30% 16%) 100%);
-    --gradient-card: linear-gradient(180deg, hsl(240 20% 11%) 0%, hsl(250 20% 14%) 100%);
+    /* Custom tokens for dark mode - Pitch Deck Style */
+    --gradient-hero: linear-gradient(145deg, hsl(265 35% 6%) 0%, hsl(268 30% 10%) 40%, hsl(270 25% 14%) 100%);
+    --gradient-dashboard: linear-gradient(145deg, hsl(265 30% 5%) 0%, hsl(268 25% 8%) 50%, hsl(270 20% 10%) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(265 25% 11%) 0%, hsl(268 22% 14%) 100%);
     --shadow-soft: 0 4px 24px -4px hsl(0 0% 0% / 0.3);
     --shadow-medium: 0 8px 32px -8px hsl(0 0% 0% / 0.4);
     --shadow-glow: 0 0 48px hsl(262 83% 58% / 0.35);
