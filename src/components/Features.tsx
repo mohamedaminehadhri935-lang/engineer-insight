@@ -38,7 +38,7 @@ export const Features = () => {
             Everything You Need to Onboard Smarter
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Built by engineers, for engineers. OnboardIQ turns tribal knowledge into structured learning.
+            Built by engineers, for engineers. OnboardMe turns tribal knowledge into structured learning.
           </p>
         </div>
         
