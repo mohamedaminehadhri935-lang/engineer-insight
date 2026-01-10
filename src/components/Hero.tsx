@@ -1,20 +1,30 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles } from "lucide-react";
 import onboardmeLogo from "@/assets/onboardme-logo.png";
+import onboardmeLogoSymbol from "@/assets/onboardme-logo-symbol.png";
 
 export const Hero = () => {
   return (
     <section className="relative min-h-screen flex flex-col overflow-hidden">
-      {/* Gradient background */}
+      {/* Dark premium gradient background */}
       <div className="absolute inset-0 bg-[image:var(--gradient-hero)]" />
       
-      {/* Animated gradient orbs */}
-      <div className="absolute top-1/4 -left-24 w-96 h-96 bg-primary/20 rounded-full blur-3xl animate-pulse" />
-      <div className="absolute bottom-1/4 -right-24 w-96 h-96 bg-secondary/20 rounded-full blur-3xl animate-pulse delay-1000" />
+      {/* Vignette overlay */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,hsl(265_35%_4%/0.4)_70%,hsl(265_35%_3%/0.8)_100%)]" />
       
-      {/* Decorative purple shapes */}
-      <div className="absolute top-20 right-10 w-32 h-32 bg-primary/30 rounded-3xl blur-sm rotate-12" />
-      <div className="absolute top-40 right-20 w-24 h-24 bg-secondary/20 rounded-2xl blur-sm -rotate-6" />
+      {/* Logo watermark - enlarged 3x, positioned top-right, semi-transparent */}
+      <div 
+        className="absolute -top-32 -right-32 w-[600px] h-[600px] opacity-[0.08] blur-[2px] pointer-events-none"
+        style={{
+          backgroundImage: `url(${onboardmeLogoSymbol})`,
+          backgroundSize: 'contain',
+          backgroundRepeat: 'no-repeat',
+          backgroundPosition: 'center',
+        }}
+      />
+      
+      {/* Subtle soft lighting glow */}
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-primary/5 rounded-full blur-3xl" />
       
       {/* Header with Logo */}
       <header className="relative z-20 w-full py-6 px-6">
