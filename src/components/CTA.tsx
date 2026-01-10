@@ -23,7 +23,7 @@ export const CTA = () => {
             
             <p className="text-xl text-white/90 max-w-2xl mx-auto">
               Join forward-thinking engineering teams reducing ramp-up time by 30%. 
-              Get early access to OnboardIQ beta.
+              Get early access to OnboardMe beta.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">

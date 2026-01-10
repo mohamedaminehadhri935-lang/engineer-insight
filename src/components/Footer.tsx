@@ -5,7 +5,7 @@ export const Footer = () => {
         <div className="grid md:grid-cols-4 gap-8 mb-8">
           {/* Brand */}
           <div className="space-y-4">
-            <h3 className="text-xl font-bold text-foreground">OnboardIQ</h3>
+            <h3 className="text-xl font-bold text-foreground">OnboardMe</h3>
             <p className="text-sm text-muted-foreground">
               AI-powered onboarding that gets engineers productive 30% faster.
             </p>
@@ -45,7 +45,7 @@ export const Footer = () => {
         </div>
         
         <div className="pt-8 border-t border-border text-center text-sm text-muted-foreground">
-          <p>&copy; 2025 OnboardIQ. All rights reserved.</p>
+          <p>&copy; 2025 OnboardMe. All rights reserved.</p>
         </div>
       </div>
     </footer>

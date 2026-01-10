@@ -29,7 +29,7 @@ export const ChatDemo = () => {
             Ask Anything About Your Codebase
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            See how OnboardIQ answers company-specific questions using your actual documentation
+            See how OnboardMe answers company-specific questions using your actual documentation
           </p>
           <Button
             size="lg"
