@@ -12,16 +12,6 @@ export const Hero = () => {
       {/* Vignette overlay */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,hsl(265_35%_4%/0.4)_70%,hsl(265_35%_3%/0.8)_100%)]" />
       
-      {/* Logo display - enlarged, positioned right, fully opaque */}
-      <div className="absolute top-1/2 right-8 md:right-16 lg:right-24 -translate-y-1/2 pointer-events-none">
-        {/* Subtle radial highlight behind logo */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,hsl(265_50%_20%/0.3)_0%,transparent_70%)] scale-150" />
-        <img 
-          src={onboardmeLogoSymbol} 
-          alt="OnboardMe Logo Symbol" 
-          className="w-[280px] h-[280px] md:w-[360px] md:h-[360px] lg:w-[450px] lg:h-[450px] object-contain relative z-10"
-        />
-      </div>
       
       {/* Subtle soft lighting glow */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-primary/5 rounded-full blur-3xl" />
@@ -59,7 +49,7 @@ export const Hero = () => {
                 Onboard Engineers
               </span>
               <br />
-              <span className="text-foreground">30% Faster with AI</span>
+              <span className="text-foreground">70% Faster with AI</span>
             </h1>
             
             {/* Subheadline */}
