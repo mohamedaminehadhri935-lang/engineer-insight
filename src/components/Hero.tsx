@@ -1,97 +1,150 @@
+import { motion, useReducedMotion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Sparkles } from "lucide-react";
-import onboardmeLogo from "@/assets/onboardme-logo.png";
-import onboardmeLogoSymbol from "@/assets/onboardme-logo-symbol.png";
+import { ArrowRight, Play, Sparkles, Building2, Users, Zap } from "lucide-react";
+import { BackgroundEffects } from "./BackgroundEffects";
+import { Navbar } from "./Navbar";
+
+// Placeholder logos for social proof
+const TrustLogos = () => (
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ delay: 0.8, duration: 0.6 }}
+    className="mt-12 pt-8 border-t border-border/30"
+  >
+    <p className="text-sm text-muted-foreground mb-6">
+      Trusted by engineering teams at
+    </p>
+    <div className="flex flex-wrap items-center justify-center gap-8 opacity-40">
+      {[1, 2, 3, 4, 5].map((i) => (
+        <div
+          key={i}
+          className="h-6 w-20 bg-muted-foreground/30 rounded"
+          aria-label={`Partner company ${i}`}
+        />
+      ))}
+    </div>
+  </motion.div>
+);
 
 export const Hero = () => {
+  const prefersReducedMotion = useReducedMotion();
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: prefersReducedMotion ? 0 : 0.15,
+        delayChildren: 0.2,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: prefersReducedMotion ? 0 : 30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6, ease: "easeOut" as const },
+    },
+  };
+
   return (
     <section className="relative min-h-screen flex flex-col overflow-hidden">
-      {/* Dark premium gradient background */}
-      <div className="absolute inset-0 bg-[image:var(--gradient-hero)]" />
-      
-      {/* Vignette overlay */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,hsl(265_35%_4%/0.4)_70%,hsl(265_35%_3%/0.8)_100%)]" />
-      
-      
-      {/* Subtle soft lighting glow */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-primary/5 rounded-full blur-3xl" />
-      
-      {/* Header with Logo */}
-      <header className="relative z-20 w-full py-6 px-6">
-        <div className="container mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <img 
-              src={onboardmeLogo} 
-              alt="OnboardMe Logo" 
-              className="h-12 w-auto"
-            />
-          </div>
-          <nav className="hidden md:flex items-center gap-8">
-            <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors">Features</a>
-            <a href="#demo" className="text-muted-foreground hover:text-foreground transition-colors">Demo</a>
-            <a href="#pricing" className="text-muted-foreground hover:text-foreground transition-colors">Pricing</a>
-          </nav>
-        </div>
-      </header>
-      
-      <div className="flex-1 flex items-center justify-center">
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-4xl mx-auto text-center space-y-8">
-            {/* Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 backdrop-blur-sm">
-              <Sparkles className="w-4 h-4 text-primary" />
-              <span className="text-sm font-medium text-foreground">AI-Powered Engineering Onboarding</span>
-            </div>
-            
-            {/* Headline */}
-            <h1 className="text-5xl md:text-7xl font-bold tracking-tight">
-              <span className="bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
-                Onboard Engineers
-              </span>
-              <br />
-              <span className="text-foreground">70% Faster with AI</span>
-            </h1>
-            
-            {/* Subheadline */}
-            <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              Transform your internal docs and JIRA tickets into personalized learning paths. 
-              Get new engineers productive in days, not months.
-            </p>
-            
-            {/* CTAs */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
-              <Button 
-                size="lg" 
-                className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 h-12 text-lg font-semibold shadow-[var(--shadow-medium)] hover:shadow-[var(--shadow-glow)] transition-all"
-              >
+      {/* Background Effects */}
+      <BackgroundEffects />
+
+      {/* Navbar */}
+      <Navbar />
+
+      {/* Hero Content */}
+      <div className="relative z-10 flex-1 flex items-center justify-center px-6 pt-24 pb-16">
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="container mx-auto max-w-5xl text-center"
+        >
+          {/* Badge */}
+          <motion.div variants={itemVariants} className="mb-8">
+            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-sm font-medium text-primary backdrop-blur-sm">
+              <Sparkles className="w-4 h-4" />
+              AI-Powered Developer Onboarding
+            </span>
+          </motion.div>
+
+          {/* Headline */}
+          <motion.h1
+            variants={itemVariants}
+            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.1] mb-6"
+          >
+            <span className="text-foreground">Onboard Engineers</span>
+            <br />
+            <span className="bg-gradient-to-r from-primary via-purple-400 to-secondary bg-clip-text text-transparent">
+              70% Faster
+            </span>{" "}
+            <span className="text-foreground">with AI</span>
+          </motion.h1>
+
+          {/* Subheadline */}
+          <motion.p
+            variants={itemVariants}
+            className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed"
+          >
+            Transform your developer onboarding with intelligent context mapping,
+            personalized learning paths, and real-time AI assistance.
+          </motion.p>
+
+          {/* CTAs */}
+          <motion.div
+            variants={itemVariants}
+            className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8"
+          >
+            <Button
+              size="lg"
+              className="group relative bg-primary hover:bg-primary/90 text-primary-foreground rounded-full h-14 px-8 text-base font-semibold shadow-xl shadow-primary/30 hover:shadow-primary/50 transition-all duration-300 hover:-translate-y-1 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            >
+              <span className="relative z-10 flex items-center gap-2">
                 Get Early Access
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-              <Button 
-                size="lg" 
-                variant="outline"
-                className="border-primary/30 hover:bg-primary/10 h-12 px-8 text-lg"
-              >
-                Watch Demo
-              </Button>
+                <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+              </span>
+              {/* Hover glow effect */}
+              <span className="absolute inset-0 rounded-full bg-gradient-to-r from-primary to-secondary opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-xl -z-10" />
+            </Button>
+
+            <Button
+              size="lg"
+              variant="outline"
+              className="group rounded-full h-14 px-8 text-base font-medium border-border/50 bg-background/50 backdrop-blur-sm hover:bg-muted/50 hover:border-primary/30 transition-all duration-300 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            >
+              <Play className="w-4 h-4 mr-2 transition-transform duration-300 group-hover:scale-110" />
+              Watch Demo
+            </Button>
+          </motion.div>
+
+          {/* Stats Row */}
+          <motion.div
+            variants={itemVariants}
+            className="flex flex-wrap items-center justify-center gap-8 text-sm text-muted-foreground"
+          >
+            <div className="flex items-center gap-2">
+              <Building2 className="w-4 h-4 text-primary" />
+              <span>50+ Engineering Teams</span>
             </div>
-            
-            {/* Social proof */}
-            <div className="pt-8 flex flex-col items-center gap-3">
-              <div className="flex -space-x-2">
-                {[1, 2, 3, 4].map((i) => (
-                  <div 
-                    key={i}
-                    className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-secondary border-2 border-background"
-                  />
-                ))}
-              </div>
-              <p className="text-sm text-muted-foreground">
-                Join 50+ engineering teams ramping up faster
-              </p>
+            <div className="flex items-center gap-2">
+              <Users className="w-4 h-4 text-primary" />
+              <span>1,000+ Developers Onboarded</span>
             </div>
-          </div>
-        </div>
+            <div className="flex items-center gap-2">
+              <Zap className="w-4 h-4 text-primary" />
+              <span>2 Week Average Time Saved</span>
+            </div>
+          </motion.div>
+
+          {/* Trust Logos */}
+          <TrustLogos />
+        </motion.div>
       </div>
     </section>
   );

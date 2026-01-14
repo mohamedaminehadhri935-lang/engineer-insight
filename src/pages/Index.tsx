@@ -1,18 +1,18 @@
 import { Hero } from "@/components/Hero";
-import { Features } from "@/components/Features";
-import { ChatDemo } from "@/components/ChatDemo";
-import { LearningMap } from "@/components/LearningMap";
-import { CTA } from "@/components/CTA";
+import { HowItWorks } from "@/components/HowItWorks";
+import { Benefits } from "@/components/Benefits";
+import { Integrations } from "@/components/Integrations";
+import { FinalCTA } from "@/components/FinalCTA";
 import { Footer } from "@/components/Footer";
 
 const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <Hero />
-      <Features />
-      <ChatDemo />
-      <LearningMap />
-      <CTA />
+      <HowItWorks />
+      <Benefits />
+      <Integrations />
+      <FinalCTA />
       <Footer />
     </div>
   );
