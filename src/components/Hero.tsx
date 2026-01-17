@@ -81,7 +81,7 @@ export const Hero = () => {
           >
             <span className="text-foreground">Onboard Engineers</span>
             <br />
-            <span className="bg-gradient-to-r from-primary via-purple-400 to-secondary bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-primary via-emerald-400 to-secondary bg-clip-text text-transparent">
               70% Faster
             </span>{" "}
             <span className="text-foreground">with AI</span>

@@ -61,9 +61,9 @@ export const BackgroundEffects = () => {
         className="absolute inset-0"
         animate={{
           background: [
-            "radial-gradient(ellipse 80% 50% at 20% 40%, hsl(262 40% 15% / 0.4) 0%, transparent 50%), radial-gradient(ellipse 60% 40% at 80% 60%, hsl(270 35% 12% / 0.3) 0%, transparent 50%)",
-            "radial-gradient(ellipse 80% 50% at 30% 50%, hsl(262 40% 15% / 0.4) 0%, transparent 50%), radial-gradient(ellipse 60% 40% at 70% 40%, hsl(270 35% 12% / 0.3) 0%, transparent 50%)",
-            "radial-gradient(ellipse 80% 50% at 20% 40%, hsl(262 40% 15% / 0.4) 0%, transparent 50%), radial-gradient(ellipse 60% 40% at 80% 60%, hsl(270 35% 12% / 0.3) 0%, transparent 50%)",
+            "radial-gradient(ellipse 80% 50% at 20% 40%, hsl(220 12% 18% / 0.5) 0%, transparent 50%), radial-gradient(ellipse 60% 40% at 80% 60%, hsl(160 40% 20% / 0.15) 0%, transparent 50%)",
+            "radial-gradient(ellipse 80% 50% at 30% 50%, hsl(220 12% 18% / 0.5) 0%, transparent 50%), radial-gradient(ellipse 60% 40% at 70% 40%, hsl(160 40% 20% / 0.15) 0%, transparent 50%)",
+            "radial-gradient(ellipse 80% 50% at 20% 40%, hsl(220 12% 18% / 0.5) 0%, transparent 50%), radial-gradient(ellipse 60% 40% at 80% 60%, hsl(160 40% 20% / 0.15) 0%, transparent 50%)",
           ],
         }}
         transition={{
@@ -77,7 +77,7 @@ export const BackgroundEffects = () => {
       <motion.div
         className="absolute w-[500px] h-[500px] rounded-full blur-[120px]"
         style={{
-          background: "radial-gradient(circle, hsl(262 60% 50% / 0.15) 0%, transparent 70%)",
+          background: "radial-gradient(circle, hsl(160 60% 35% / 0.12) 0%, transparent 70%)",
           top: "10%",
           left: "15%",
           x: orb1X,
@@ -97,7 +97,7 @@ export const BackgroundEffects = () => {
       <motion.div
         className="absolute w-[400px] h-[400px] rounded-full blur-[100px]"
         style={{
-          background: "radial-gradient(circle, hsl(270 50% 45% / 0.12) 0%, transparent 70%)",
+          background: "radial-gradient(circle, hsl(158 50% 30% / 0.1) 0%, transparent 70%)",
           top: "50%",
           right: "10%",
           x: orb2X,
@@ -117,7 +117,7 @@ export const BackgroundEffects = () => {
       <motion.div
         className="absolute w-[350px] h-[350px] rounded-full blur-[80px]"
         style={{
-          background: "radial-gradient(circle, hsl(255 45% 55% / 0.1) 0%, transparent 70%)",
+          background: "radial-gradient(circle, hsl(220 15% 25% / 0.15) 0%, transparent 70%)",
           bottom: "20%",
           left: "40%",
           x: orb3X,
@@ -138,7 +138,7 @@ export const BackgroundEffects = () => {
       <motion.div
         className="absolute inset-0"
         style={{
-          background: "linear-gradient(105deg, transparent 40%, hsl(262 60% 70% / 0.03) 50%, transparent 60%)",
+          background: "linear-gradient(105deg, transparent 40%, hsl(160 60% 50% / 0.03) 50%, transparent 60%)",
         }}
         animate={{
           x: ["-100%", "200%"],
@@ -160,7 +160,7 @@ export const BackgroundEffects = () => {
       />
 
       {/* Vignette */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,hsl(265_35%_4%/0.5)_80%,hsl(265_35%_3%/0.9)_100%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,hsl(220_12%_6%/0.5)_80%,hsl(220_12%_4%/0.9)_100%)]" />
     </div>
   );
 };
